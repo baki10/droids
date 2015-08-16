@@ -14,6 +14,7 @@ import android.view.SurfaceView;
 
 import com.game.bakigoal.droidgame.model.Droid;
 import com.game.bakigoal.droidgame.model.ElaineAnimated;
+import com.game.bakigoal.droidgame.model.Explosion;
 import com.game.bakigoal.droidgame.model.components.Speed;
 
 /**
@@ -22,6 +23,7 @@ import com.game.bakigoal.droidgame.model.components.Speed;
 public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private static final String TAG = MainGamePanel.class.getSimpleName();
+    private static final int EXPLOSION_SIZE = 200;
     private final float scale;
 
     private MainThread thread;
@@ -30,6 +32,8 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     // the fps to be displayed
     private String avgFps;
+
+    private Explosion explosion;
 
     public MainGamePanel(Context context) {
         super(context);
@@ -41,8 +45,8 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         // create Elaine and load bitmap
         elaine = new ElaineAnimated(
                 BitmapFactory.decodeResource(getResources(), R.drawable.walk_elaine)
-                , 10, 50	// initial position
-                , 5, 5);	// FPS and number of frames in the animation
+                , 10, 50    // initial position
+                , 5, 5);    // FPS and number of frames in the animation
         // create the game loop thread
         thread = new MainThread(getHolder(), this);
         // make the GamePanel focusable so it can handle events
@@ -92,6 +96,11 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
                 } else {
                     Log.d(TAG, "Coords: x = " + eventX + ", y = " + eventY);
                     Log.d(TAG, "Droid Coords: x = " + droid.getX() + ", y = " + droid.getY());
+                }
+                // handle touch
+                // check if explosion is null or if it is still active
+                if (explosion == null || explosion.getState() == Explosion.STATE_DEAD) {
+                    explosion = new Explosion(EXPLOSION_SIZE, (int)event.getX(), (int)event.getY());
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -143,6 +152,10 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         droid.update();
         // Update elaine state
         elaine.update(System.currentTimeMillis(), getWidth());
+        // update explosions
+        if (explosion != null && explosion.isAlive()) {
+            explosion.update(getHolder().getSurfaceFrame());
+        }
     }
 
     public void displayGameState(Canvas canvas) {
@@ -156,6 +169,10 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         displayFps(canvas, avgFps);
         // display Elaine
         elaine.draw(canvas);
+        // render explosions
+        if (explosion != null) {
+            explosion.draw(canvas);
+        }
     }
 
     public void setAvgFps(String avgFps) {
