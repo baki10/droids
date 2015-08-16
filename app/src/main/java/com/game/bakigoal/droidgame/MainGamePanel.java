@@ -13,6 +13,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.game.bakigoal.droidgame.model.Droid;
+import com.game.bakigoal.droidgame.model.ElaineAnimated;
 import com.game.bakigoal.droidgame.model.components.Speed;
 
 /**
@@ -25,6 +26,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     private MainThread thread;
     private Droid droid;
+    private ElaineAnimated elaine;
 
     // the fps to be displayed
     private String avgFps;
@@ -36,6 +38,11 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         getHolder().addCallback(this);
         // create droid
         droid = new Droid(BitmapFactory.decodeResource(getResources(), R.drawable.droid_1), 50, 50);
+        // create Elaine and load bitmap
+        elaine = new ElaineAnimated(
+                BitmapFactory.decodeResource(getResources(), R.drawable.walk_elaine)
+                , 10, 50	// initial position
+                , 5, 5);	// FPS and number of frames in the animation
         // create the game loop thread
         thread = new MainThread(getHolder(), this);
         // make the GamePanel focusable so it can handle events
@@ -132,8 +139,10 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
             droid.getSpeed().toggleYDirection();
         }
 
-        //Update the lone droid
+        // Update the lone droid
         droid.update();
+        // Update elaine state
+        elaine.update(System.currentTimeMillis(), getWidth());
     }
 
     public void displayGameState(Canvas canvas) {
@@ -145,6 +154,8 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         droid.draw(canvas);
         // display fps
         displayFps(canvas, avgFps);
+        // display Elaine
+        elaine.draw(canvas);
     }
 
     public void setAvgFps(String avgFps) {
