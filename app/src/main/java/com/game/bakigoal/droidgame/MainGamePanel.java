@@ -99,11 +99,11 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
     }
 
     /**
-     * This is the game update method. It iterates through all the objects
-     * and calls their update method if they have one or calls specific
-     * engine's update method.
+     * This is the game updateGameState method. It iterates through all the objects
+     * and calls their updateGameState method if they have one or calls specific
+     * engine's updateGameState method.
      */
-    public void update() {
+    public void updateGameState() {
         // check collision with right wall if heading right
         if (droid.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT &&
                 droid.getX() + droid.getBitmap().getWidth() / 2 >= getWidth()) {
@@ -129,7 +129,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         droid.update();
     }
 
-    public void render(Canvas canvas) {
+    public void displayGameState(Canvas canvas) {
         if (canvas == null) {
             return;
         }
