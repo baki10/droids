@@ -11,6 +11,7 @@ public class DroidActivity extends Activity {
 
     private static final String TAG = DroidActivity.class.getSimpleName();
 
+    private MainGamePanel mainGamePanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +21,10 @@ public class DroidActivity extends Activity {
         // making it full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         // set our MainGamePanel as the View
-        setContentView(new MainGamePanel(this));
+        mainGamePanel = new MainGamePanel(this);
+        mainGamePanel.setKeepScreenOn(true);
+        setContentView(mainGamePanel);
+
         Log.d(TAG, "View added");
 
     }

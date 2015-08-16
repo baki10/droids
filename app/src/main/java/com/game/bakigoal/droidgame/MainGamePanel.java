@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -19,12 +21,17 @@ import com.game.bakigoal.droidgame.model.components.Speed;
 public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private static final String TAG = MainGamePanel.class.getSimpleName();
+    private final float scale;
 
     private MainThread thread;
     private Droid droid;
 
+    // the fps to be displayed
+    private String avgFps;
+
     public MainGamePanel(Context context) {
         super(context);
+        scale = context.getResources().getDisplayMetrics().density;
         // adding the callback (this) to the surface holder to intercept events
         getHolder().addCallback(this);
         // create droid
@@ -136,5 +143,23 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         //fills the canvas with black
         canvas.drawColor(Color.BLACK);
         droid.draw(canvas);
+        // display fps
+        displayFps(canvas, avgFps);
     }
+
+    public void setAvgFps(String avgFps) {
+        this.avgFps = avgFps;
+    }
+
+    private void displayFps(Canvas canvas, String fps) {
+        if (canvas != null && fps != null) {
+            Paint paint = new Paint();
+            paint.setTextSize(15 * scale);
+            paint.setAntiAlias(true);
+            paint.setColor(Color.WHITE);
+            paint.setTextAlign(Paint.Align.RIGHT);
+            canvas.drawText(fps, this.getWidth() - 10, paint.getTextSize() + 10, paint);
+        }
+    }
+
 }
