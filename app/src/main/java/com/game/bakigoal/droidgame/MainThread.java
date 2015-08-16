@@ -32,15 +32,16 @@ public class MainThread extends Thread {
         Log.d(TAG, "Starting game loop");
         while (running) {
             canvas = null;
-            try{
+            try {
                 canvas = this.surfaceHolder.lockCanvas();
-                synchronized (surfaceHolder){
+                synchronized (surfaceHolder) {
                     // update game state
-                    // draws the canvas on the panel
-                    this.gamePanel.draw(canvas);
+                    this.gamePanel.update();
+                    // render the canvas on the panel
+                    this.gamePanel.render(canvas);
                 }
-            }finally {
-                if(canvas!=null){
+            } finally {
+                if (canvas != null) {
                     surfaceHolder.unlockCanvasAndPost(canvas);
                 }
             }

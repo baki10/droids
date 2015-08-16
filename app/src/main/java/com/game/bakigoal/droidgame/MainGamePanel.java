@@ -2,7 +2,6 @@ package com.game.bakigoal.droidgame;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +9,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.game.bakigoal.droidgame.model.Droid;
+import com.game.bakigoal.droidgame.model.components.Speed;
 
 /**
  * Created by bakigoal on 15.08.15.
@@ -35,10 +37,10 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        if (!thread.isAlive()) {
-            thread.setRunning(true);
-            thread.start();
-        }
+        // at this point the surface is created and
+        // we can safely start the game loop
+        thread.setRunning(true);
+        thread.start();
     }
 
     @Override
@@ -57,6 +59,7 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
                 //try again shutting down the thread
             }
         }
+        Log.d(TAG, "Thread was shut down cleanly");
     }
 
     @Override
@@ -95,8 +98,41 @@ public class MainGamePanel extends SurfaceView implements SurfaceHolder.Callback
         return true;
     }
 
-    @Override
-    public void draw(Canvas canvas) {
+    /**
+     * This is the game update method. It iterates through all the objects
+     * and calls their update method if they have one or calls specific
+     * engine's update method.
+     */
+    public void update() {
+        // check collision with right wall if heading right
+        if (droid.getSpeed().getxDirection() == Speed.DIRECTION_RIGHT &&
+                droid.getX() + droid.getBitmap().getWidth() / 2 >= getWidth()) {
+            droid.getSpeed().toggleXDirection();
+        }
+        // check collision with left wall
+        if (droid.getSpeed().getxDirection() == Speed.DIRECTION_LEFT &&
+                droid.getX() - droid.getBitmap().getWidth() / 2 <= 0) {
+            droid.getSpeed().toggleXDirection();
+        }
+        // check collision with top wall
+        if (droid.getSpeed().getyDirection() == Speed.DIRECTION_UP &&
+                droid.getY() - droid.getBitmap().getHeight() / 2 <= 0) {
+            droid.getSpeed().toggleYDirection();
+        }
+        // check collision with bottom wall
+        if (droid.getSpeed().getyDirection() == Speed.DIRECTION_DOWN &&
+                droid.getY() + droid.getBitmap().getHeight() / 2 >= getHeight()) {
+            droid.getSpeed().toggleYDirection();
+        }
+
+        //Update the lone droid
+        droid.update();
+    }
+
+    public void render(Canvas canvas) {
+        if (canvas == null) {
+            return;
+        }
         //fills the canvas with black
         canvas.drawColor(Color.BLACK);
         droid.draw(canvas);

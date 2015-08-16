@@ -1,7 +1,9 @@
-package com.game.bakigoal.droidgame;
+package com.game.bakigoal.droidgame.model;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+
+import com.game.bakigoal.droidgame.model.components.Speed;
 
 /**
  * Created by bakigoal on 15.08.15.
@@ -12,10 +14,13 @@ public class Droid {
     private int y;
     private boolean touched;
 
+    private Speed speed;
+
     public Droid(Bitmap bitmap, int x, int y) {
         this.bitmap = bitmap;
         this.x = x;
         this.y = y;
+        speed = new Speed();
     }
 
     public void draw(Canvas canvas) {
@@ -31,7 +36,7 @@ public class Droid {
                 eventY >= (getY() - bitmap.getHeight() / 2) &&
                 eventY <= (getY() + bitmap.getHeight() / 2)) {
             setTouched(true);
-        }else {
+        } else {
             setTouched(false);
         }
     }
@@ -66,5 +71,20 @@ public class Droid {
 
     public void setTouched(boolean touched) {
         this.touched = touched;
+    }
+
+    public Speed getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Speed speed) {
+        this.speed = speed;
+    }
+
+    public void update() {
+        if (!touched) {
+            x += speed.getXv() * speed.getxDirection();
+            y += speed.getYv() * speed.getyDirection();
+        }
     }
 }
